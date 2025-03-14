@@ -298,7 +298,7 @@ class ICSGenerator:
                 end_event.add('dtstart', end_time - timedelta(hours=1))  # 从结束时间前1小时开始
                 end_event.add('dtend', end_time)
                 end_event.add('description', event_data['description'])
-                end_event.add('tzid', 'Asia/Shanghai')
+                # end_event.add('tzid', 'Asia/Shanghai')
                 self.calendar.add_component(end_event)
                 
                 logger.info(f'添加拆分事件到日历: {event_data["title"]} (开始和结束)')
@@ -309,7 +309,7 @@ class ICSGenerator:
                 event.add('dtstart', start_time)
                 event.add('dtend', end_time)
                 event.add('description', event_data['description'])
-                event.add('tzid', 'Asia/Shanghai')
+                # event.add('tzid', 'Asia/Shanghai')
                 self.calendar.add_component(event)
                 logger.info(f'添加活动到日历: {event_data["title"]}')
         except Exception as e:

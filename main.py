@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import logging
 import re
@@ -59,7 +59,7 @@ class PostCrawler:
             for option in options:
                 chrome_options.add_argument(option)
             return webdriver.Chrome(
-                service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
+                service=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()),
                 options=chrome_options
             )
         except Exception as e:
@@ -277,14 +277,41 @@ class ICSGenerator:
     def add_event(self, event_data: Dict):
         """添加活动到日历"""
         try:
-            event = Event()
-            event.add('summary', event_data['title'])
-            event.add('dtstart', event_data['start_time'])
-            event.add('dtend', event_data['end_time'])
-            event.add('description', event_data['description'])
-            event.add('tzid', 'Asia/Shanghai')
-            self.calendar.add_component(event)
-            logger.info(f'添加活动到日历: {event_data["title"]}')
+            start_time = event_data['start_time']
+            end_time = event_data['end_time']
+            duration = end_time - start_time
+            
+            # 如果事件持续时间超过24小时，则拆分为两个事件
+            if duration.total_seconds() > 24 * 3600:
+                # 添加开始事件
+                start_event = Event()
+                start_event.add('summary', f"{event_data['title']} 开始")
+                start_event.add('dtstart', start_time)
+                start_event.add('dtend', start_time + timedelta(hours=1))  # 设置1小时的持续时间
+                start_event.add('description', event_data['description'])
+                start_event.add('tzid', 'Asia/Shanghai')
+                self.calendar.add_component(start_event)
+                
+                # 添加结束事件
+                end_event = Event()
+                end_event.add('summary', f"{event_data['title']} 结束")
+                end_event.add('dtstart', end_time - timedelta(hours=1))  # 从结束时间前1小时开始
+                end_event.add('dtend', end_time)
+                end_event.add('description', event_data['description'])
+                end_event.add('tzid', 'Asia/Shanghai')
+                self.calendar.add_component(end_event)
+                
+                logger.info(f'添加拆分事件到日历: {event_data["title"]} (开始和结束)')
+            else:
+                # 对于短时间事件，保持原有逻辑
+                event = Event()
+                event.add('summary', event_data['title'])
+                event.add('dtstart', start_time)
+                event.add('dtend', end_time)
+                event.add('description', event_data['description'])
+                event.add('tzid', 'Asia/Shanghai')
+                self.calendar.add_component(event)
+                logger.info(f'添加活动到日历: {event_data["title"]}')
         except Exception as e:
             logger.error(f'添加活动到日历失败: {str(e)}', exc_info=True)
 

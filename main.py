@@ -59,11 +59,11 @@ class PostCrawler:
             for option in options:
                 chrome_options.add_argument(option)
             return webdriver.Chrome(
-                service=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()),
+                service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
                 options=chrome_options
             )
         except Exception as e:
-            logger.error(f'初始化WebDriver失败: {str(e)}')
+            logger.error(f'初始化WebDriver失败: {str(e)}', exc_info=True)
             raise
 
     def __del__(self):
@@ -71,7 +71,7 @@ class PostCrawler:
             try:
                 self.driver.quit()
             except Exception as e:
-                logger.error(f'关闭WebDriver失败: {str(e)}')
+                logger.error(f'关闭WebDriver失败: {str(e)}', exc_info=True)
 
     def get_posts(self, keyword: str) -> List[Dict[str, str]]:
         """获取调频说明帖子列表"""
@@ -97,13 +97,13 @@ class PostCrawler:
                             'url': link_element.get_attribute('href')
                         })
                 except Exception as e:
-                    logger.warning(f'解析帖子元素失败: {str(e)}')
+                    logger.warning(f'解析帖子元素失败: {str(e)}', exc_info=True)
                     continue
             
             logger.info(f'成功获取到 {len(posts)} 个帖子')
             return posts
         except Exception as e:
-            logger.error(f'获取帖子列表失败: {str(e)}')
+            logger.error(f'获取帖子列表失败: {str(e)}', exc_info=True)
             return []
 
     def parse_post_content(self, post_url: str) -> Optional[Dict]:
@@ -140,7 +140,7 @@ class PostCrawler:
             logger.warning(f'帖子 "{title}" 中未找到有效的时间信息')
             return None
         except Exception as e:
-            logger.error(f'解析帖子内容失败: {str(e)}')
+            logger.error(f'解析帖子内容失败: {str(e)}', exc_info=True)
             return None
 
     def _get_element_text(self, by: str, value: str) -> str:
@@ -205,7 +205,7 @@ class PostCrawler:
                 logger.info(f'找到版本时间格式：版本 {version}, 开始时间 {start_time}, 结束时间 {end_time}')
                 return start_time, end_time
         except Exception as e:
-            logger.error(f'解析版本时间失败: {str(e)}')
+            logger.error(f'解析版本时间失败: {str(e)}', exc_info=True)
         
         return None
 
@@ -222,7 +222,7 @@ class PostCrawler:
                 return start_time
 
         except Exception as e:
-            logger.error(f'获取版本开始时间失败: {str(e)}')
+            logger.error(f'获取版本开始时间失败: {str(e)}', exc_info=True)
         
         return None
 
@@ -232,7 +232,7 @@ class PostCrawler:
             with open(VERSION_FILE, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            logger.warning(f'读取版本文件失败: {str(e)}')
+            logger.warning(f'读取版本文件失败: {str(e)}', exc_info=True)
             return {}
 
     def _fetch_version_start_time(self, version: str) -> Optional[datetime]:
@@ -248,7 +248,7 @@ class PostCrawler:
                 if f'【绝区零绳网情报站】{version}版本' in post['subject']:
                     return datetime.fromtimestamp(post['created_at'])
         except Exception as e:
-            logger.error(f'从API获取版本时间失败: {str(e)}')
+            logger.error(f'从API获取版本时间失败: {str(e)}', exc_info=True)
         
         return None
 
@@ -260,7 +260,7 @@ class PostCrawler:
                 json.dump(version_data, f, indent=4)
             logger.info(f'已更新version.json文件')
         except Exception as e:
-            logger.error(f'保存版本数据失败: {str(e)}')
+            logger.error(f'保存版本数据失败: {str(e)}', exc_info=True)
 
 
 class ICSGenerator:
@@ -284,7 +284,7 @@ class ICSGenerator:
             self.calendar.add_component(event)
             logger.info(f'添加活动到日历: {event_data["title"]}')
         except Exception as e:
-            logger.error(f'添加活动到日历失败: {str(e)}')
+            logger.error(f'添加活动到日历失败: {str(e)}', exc_info=True)
 
     def save_ics(self, filename: str):
         """保存ICS文件"""
@@ -293,7 +293,7 @@ class ICSGenerator:
                 f.write(self.calendar.to_ical())
             logger.info(f'ICS文件已保存: {filename}')
         except Exception as e:
-            logger.error(f'保存ICS文件失败: {str(e)}')
+            logger.error(f'保存ICS文件失败: {str(e)}', exc_info=True)
 
 
 def merge_events(events: List[Dict]) -> Dict[Tuple[str, str], Dict]:
@@ -347,7 +347,7 @@ def main():
         logger.info('程序执行完成')
 
     except Exception as e:
-        logger.error(f'程序执行失败: {str(e)}')
+        logger.error(f'程序执行失败: {str(e)}', exc_info=True)
 
 
 if __name__ == '__main__':

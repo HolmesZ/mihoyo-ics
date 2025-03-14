@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
 # 常量配置
 BASE_URL = 'https://www.miyoushe.com/zzz/search'
@@ -46,11 +47,19 @@ class PostCrawler:
         """初始化WebDriver"""
         try:
             chrome_options = Options()
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--no-sandbox')
-            chrome_options.add_argument('--disable-dev-shm-usage')
+            options = [
+                "--headless",
+                "--disable-gpu",
+                "--window-size=1920,1200",
+                "--ignore-certificate-errors",
+                "--disable-extensions",
+                "--no-sandbox",
+                "--disable-dev-shm-usage"
+            ]
+            for option in options:
+                chrome_options.add_argument(option)
             return webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()),
+                service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
                 options=chrome_options
             )
         except Exception as e:

@@ -2,7 +2,7 @@ name: Update Calendar
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
+    - cron: '0 0 */3 * *'  # 每3天 UTC 00:00 运行
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -30,11 +30,8 @@ jobs:
     
     - name: Run calendar update script
       run: python main.py
-
-    - name: Check chromedrive
-      run: |
-        tree /home/runner/.wdm/drivers/chromedriver/linux64/134.0.6998.88
     
+    # 需要打开设置中 GitHub Actions 的写权限
     - name: Commit and push if changed
       run: |
         git config --global user.name 'github-actions[bot]'

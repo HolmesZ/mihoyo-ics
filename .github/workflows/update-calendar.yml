@@ -35,6 +35,10 @@ jobs:
     
     - name: Run calendar update script
       run: python main.py
+
+    - name: Check chromedrive
+      run: |
+        tree /home/runner/.wdm/drivers/chromedriver/linux64/134.0.6998.88
     
     - name: Commit and push if changed
       run: |

@@ -271,7 +271,7 @@ class ICSGenerator:
         self.calendar.add('prodid', '-//米哈游绝区零调频活动日历//CN')
         self.calendar.add('version', '2.0')
         self.calendar.add('x-wr-calname', '绝区零调频活动')
-        self.calendar.add('x-wr-timezone', 'Asia/Shanghai')
+        # self.calendar.add('x-wr-timezone', 'Asia/Shanghai')
         logger.info('初始化日历生成器')
 
     def add_event(self, event_data: Dict):
@@ -289,7 +289,7 @@ class ICSGenerator:
                 start_event.add('dtstart', start_time)
                 start_event.add('dtend', start_time + timedelta(hours=1))  # 设置1小时的持续时间
                 start_event.add('description', event_data['description'])
-                start_event.add('tzid', 'Asia/Shanghai')
+                # start_event.add('tzid', 'Asia/Shanghai')
                 self.calendar.add_component(start_event)
                 
                 # 添加结束事件

@@ -59,7 +59,7 @@ class PostCrawler:
             for option in options:
                 chrome_options.add_argument(option)
             return webdriver.Chrome(
-                service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
+                service=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()),
                 options=chrome_options
             )
         except Exception as e:

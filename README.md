@@ -12,6 +12,9 @@
 ## 支持的游戏
 - 绝区零
 
+## 使用说明
+- 向日历添加ics链接：`https://raw.githubusercontent.com/HolmesZ/mihoyo-ics/refs/heads/main/zzz_events.ics`
+
 ## 安装说明
 1. 确保已安装Python 3.11或更高版本
 2. 克隆本仓库到本地：
